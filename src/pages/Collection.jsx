@@ -18,12 +18,25 @@ export default function Collection() {
     const [activeCategory, setActiveCategory] = useState(initialCat);
     const [sortOrder, setSortOrder] = useState('default'); // 'default', 'price-asc', 'price-desc'
 
+    // Local Storage for Likes
+    const [likedItems, setLikedItems] = useState(() => {
+        const savedLikes = localStorage.getItem('studio_likes');
+        return savedLikes ? JSON.parse(savedLikes) : {};
+    });
+
+    const toggleLike = (id) => {
+        setLikedItems(prev => {
+            const newLikes = { ...prev, [id]: !prev[id] };
+            localStorage.setItem('studio_likes', JSON.stringify(newLikes));
+            return newLikes;
+        });
+    };
+
     useEffect(() => {
         setActiveCategory(searchParams.get('category') || 'All');
     }, [searchParams]);
 
     const allProductsList = useMemo(() => {
-        if (loading) return [];
         let list = [];
         if (activeCategory === 'All') {
             Object.values(productsByCategory).forEach(arr => {
@@ -33,14 +46,16 @@ export default function Collection() {
             list = productsByCategory[activeCategory] || [];
         }
 
-        // Sort
+        // Sort (clone first to prevent state mutation)
+        let sortedList = [...list];
         if (sortOrder === 'price-asc') {
-            list.sort((a, b) => a.price - b.price);
+            sortedList.sort((a, b) => a.price - b.price);
         } else if (sortOrder === 'price-desc') {
-            list.sort((a, b) => b.price - a.price);
+            sortedList.sort((a, b) => b.price - a.price);
         }
 
-        return list;
+        // Limit the rendering to maximum 3 collection items as requested
+        return sortedList.slice(0, 3);
     }, [productsByCategory, activeCategory, sortOrder, loading]);
 
     useGSAP(() => {
@@ -93,8 +108,8 @@ export default function Collection() {
                                     setSearchParams(p);
                                 }}
                                 className={`uppercase text-sm tracking-wider font-medium whitespace-nowrap px-4 py-2 rounded-full transition-colors ${activeCategory === cat
-                                        ? 'bg-black text-white'
-                                        : 'bg-white text-black border border-gray-200 hover:border-black'
+                                    ? 'bg-black text-white'
+                                    : 'bg-white text-black border border-gray-200 hover:border-black'
                                     }`}
                             >
                                 {cat}
@@ -120,11 +135,7 @@ export default function Collection() {
             </div>
 
             <div className="max-w-screen-2xl mx-auto px-4 md:px-8 pb-40">
-                {loading ? (
-                    <div className="py-40 flex justify-center items-center">
-                        <div className="w-16 h-16 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
-                    </div>
-                ) : allProductsList.length === 0 ? (
+                {allProductsList.length === 0 ? (
                     <div className="py-40 text-center uppercase tracking-widest text-gray-500 font-medium">
                         0 Results Found
                     </div>
@@ -153,7 +164,7 @@ export default function Collection() {
 
                                     {/* Details Info */}
                                     <div className="w-full md:w-[45%] flex flex-col justify-center gap-10 py-8 lg:py-16">
-                                        
+
                                         <div className="flex flex-col gap-4 border-b border-gray-200 pb-10">
                                             <div className="flex justify-between items-start gap-4">
                                                 <span className="text-xs font-semibold tracking-[0.2em] uppercase text-gray-400">
@@ -172,15 +183,20 @@ export default function Collection() {
                                             {product.description}
                                         </p>
 
-                                        <div className="pt-4 flex items-center gap-4">
+                                        <div className="pt-4 flex items-center gap-4 z-20">
                                             <button className="bg-black text-white px-10 py-4 rounded-full font-medium text-xs tracking-[0.15em] uppercase hover:bg-neutral-800 transition-all duration-300 transform hover:-translate-y-1 w-fit group-hover:shadow-2xl">
                                                 Add to Cart
                                             </button>
-                                            <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black transition-colors duration-300">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                            <button
+                                                onClick={() => toggleLike(product.id)}
+                                                className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-110 ${likedItems[product.id] ? 'border-red-500 bg-red-50 text-red-500' : 'border-gray-300 hover:border-black text-gray-400 hover:text-black'}`}
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill={likedItems[product.id] ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                                </svg>
                                             </button>
                                         </div>
-                                        
+
                                         {/* Minimal Specs */}
                                         <div className="mt-auto grid grid-cols-2 gap-4 pt-12 text-xs uppercase tracking-widest text-gray-400 border-t border-gray-100">
                                             <div className="flex flex-col gap-1">
