@@ -62,7 +62,7 @@ export default function Home() {
                         </div>
 
                         {posterImages.length > 0 && (
-                            <div className="w-full h-full md:h-screen cursor-grab active:cursor-grabbing">
+                            <div className="absolute inset-0 w-full h-full md:h-screen cursor-grab active:cursor-grabbing z-0" style={{ opacity: 1, visibility: 'visible' }}>
                                 <FlyingPosters
                                     key={posterImages.map(img => img.slice(-10)).join('')}
                                     items={posterImages}

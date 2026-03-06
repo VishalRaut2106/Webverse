@@ -49,9 +49,9 @@ export default function Collection() {
         // Sort (clone first to prevent state mutation)
         let sortedList = [...list];
         if (sortOrder === 'price-asc') {
-            sortedList.sort((a, b) => a.price - b.price);
+            sortedList.sort((a, b) => Number(a.price) - Number(b.price));
         } else if (sortOrder === 'price-desc') {
-            sortedList.sort((a, b) => b.price - a.price);
+            sortedList.sort((a, b) => Number(b.price) - Number(a.price));
         }
 
         // Limit the rendering to maximum 3 collection items as requested
