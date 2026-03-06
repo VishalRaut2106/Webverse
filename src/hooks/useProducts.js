@@ -3,6 +3,29 @@ import { collection, getDocs, setDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 export function useProducts() {
   const dummyData = {
+    "men's clothing": [
+        {
+            id: `dummy-m-0`,
+            title: "OVERSIZED WOOL BLEND COAT",
+            price: 890.00,
+            image: "https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1000&auto=format&fit=crop",
+            description: "A masterclass in modern tailoring. This heavyweight wool-blend coat features dropped shoulders, a dramatic lapel, and an unstructured silhouette for effortless, draped layering."
+        },
+        {
+            id: `dummy-m-1`,
+            title: "CASHMERE TURTLENECK SWEATER",
+            price: 450.00,
+            image: "https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?q=80&w=1000&auto=format&fit=crop",
+            description: "Spun from hyper-soft Mongolian cashmere. A minimalist essential with a ribbed collar and cuffs, designed for a slim, athletic fit that retains supreme comfort."
+        },
+        {
+            id: `dummy-m-2`,
+            title: "TAILORED WIDE-LEG TROUSERS",
+            price: 320.00,
+            image: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?q=80&w=1000&auto=format&fit=crop",
+            description: "Engineered from a fluid wool gabardine. These trousers utilize a double front pleat to generate maximum volume, falling perfectly over boots or heavy loafers."
+        }
+    ],
     "furniture": [
         {
             id: `dummy-f-0`,
